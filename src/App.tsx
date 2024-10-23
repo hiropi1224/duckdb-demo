@@ -36,18 +36,17 @@ const initDuckDB = async (
   const c = await db.connect();
   await c.query(`
     INSTALL json;
-    INSTALL spatial;
   `);
 };
 
-import type { Table, StructRowProxy } from "apache-arrow";
+import type { StructRowProxy } from "apache-arrow";
 
 function App() {
-  const [count, setCount] = useState(0)
   const [duckdbInitialized, setDuckDBInitialized] = useState(false);
   const [duckdbLoaded, setDuckDBLoaded] = useState(false);
   const [myDuckDB, setMyDuckDB] = useState<duckdb.AsyncDuckDB | null>(null);
   const [cityData, setCityData] = useState<StructRowProxy[]>([]);
+  const [selectedCityId, setSelectedCityId] = useState<number | null>(null);
 
   const origin = window.location.origin;
   const path = window.location.pathname;
@@ -94,32 +93,28 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
       {
         duckdbLoaded ? (
           <div>
             <p>DuckDB loaded</p>
+            <input
+              type="number"
+              placeholder="都市IDを入力"
+              onChange={(e) => setSelectedCityId(Number(e.target.value))}
+            />
             <button onClick={async () => {
-              if (myDuckDB) {
+              if (myDuckDB && selectedCityId !== null) {
                 const conn = await myDuckDB.connect();
-                const result = await conn.query('SELECT * FROM cities');
+                const result = await conn.query(`
+                  SELECT * FROM cities WHERE id = ${selectedCityId}
+                `);
                 const rows = result.toArray();
                 setCityData(rows);
                 console.log(rows);
                 await conn.close();
               }
             }}>
-              都市データを表示
+              特定の都市データを表示
             </button>
             {cityData.length > 0 && (
               <table>

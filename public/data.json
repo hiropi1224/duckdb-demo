@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "東京", "population": 13929286 },
+  { "id": 2, "name": "横浜", "population": 3740172 },
+  { "id": 3, "name": "大阪", "population": 2691185 },
+  { "id": 4, "name": "名古屋", "population": 2295638 },
+  { "id": 5, "name": "札幌", "population": 1952356 }
+]
